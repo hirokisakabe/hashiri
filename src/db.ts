@@ -38,7 +38,10 @@ function openDatabase(): Promise<IDBDatabase> {
     });
 
     request.addEventListener("success", () => resolve(request.result));
-    request.addEventListener("error", () => reject(request.error));
+    request.addEventListener("error", () => {
+      dbPromise = null;
+      reject(request.error);
+    });
   });
 
   return dbPromise;

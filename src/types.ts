@@ -4,5 +4,5 @@ export type Note = {
   createdAt: number;
   updatedAt: number;
   revision: number;
-  archived: false;
+  archived: boolean;
 };
