@@ -86,12 +86,6 @@ button {
   font-weight: 600;
 }
 
-.brand .kanji {
-  color: var(--faint);
-  font-size: 13px;
-  letter-spacing: 0.04em;
-}
-
 .actions {
   display: flex;
   align-items: center;
@@ -447,10 +441,6 @@ button {
 
   .topbar {
     padding: 18px 18px 14px;
-  }
-
-  .brand .kanji {
-    display: none;
   }
 
   .stage {

@@ -301,7 +301,6 @@ function App() {
       <header className="topbar">
         <div className="brand" aria-label="Hashiri">
           <span className="word">hashiri</span>
-          <span className="kanji">走り</span>
         </div>
         <div className="actions">
           <button
