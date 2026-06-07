@@ -1,0 +1,254 @@
+:root {
+  color: #1d1b16;
+  background: #f4f0e6;
+  font-family:
+    "Avenir Next", "Yu Gothic", "Hiragino Sans", "Helvetica Neue", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --paper: #fffaf0;
+  --ink: #1d1b16;
+  --muted: #6f685a;
+  --line: #d8cdb8;
+  --accent: #137c6b;
+  --accent-dark: #0e5f53;
+  --danger: #9f2f22;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    linear-gradient(90deg, rgba(29, 27, 22, 0.04) 1px, transparent 1px) 0 0 /
+      42px 42px,
+    linear-gradient(rgba(29, 27, 22, 0.035) 1px, transparent 1px) 0 0 / 42px
+      42px,
+    #f4f0e6;
+}
+
+button,
+textarea {
+  font: inherit;
+}
+
+button {
+  min-width: 7rem;
+  min-height: 2.75rem;
+  border: 0;
+  border-radius: 4px;
+  color: #fffaf0;
+  background: var(--accent);
+  cursor: pointer;
+  font-weight: 700;
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+button:hover:not(:disabled) {
+  background: var(--accent-dark);
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.app-shell {
+  width: min(100%, 920px);
+  margin: 0 auto;
+  padding: 40px 18px 56px;
+}
+
+.stream-panel {
+  position: relative;
+}
+
+.stream-panel::before {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: max(24px, calc(50% - 430px));
+  width: 2px;
+  content: "";
+  background: #c94130;
+  opacity: 0.78;
+}
+
+.stream-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+  padding-left: 30px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-family: Georgia, "Yu Mincho", "Hiragino Mincho ProN", serif;
+  font-size: clamp(2.35rem, 8vw, 5.2rem);
+  font-weight: 500;
+  line-height: 0.94;
+}
+
+.counter {
+  min-width: 6.5rem;
+  margin: 0;
+  padding: 8px 10px;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  color: var(--muted);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.composer {
+  margin-bottom: 22px;
+  padding: 20px 0 20px 30px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.composer label {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+textarea {
+  display: block;
+  width: 100%;
+  resize: vertical;
+  border: 1px solid rgba(29, 27, 22, 0.18);
+  border-radius: 4px;
+  color: var(--ink);
+  background: rgba(255, 250, 240, 0.82);
+  line-height: 1.65;
+  outline: none;
+}
+
+textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(19, 124, 107, 0.16);
+}
+
+.composer textarea {
+  min-height: 128px;
+  padding: 14px 16px;
+  font-size: 1.08rem;
+}
+
+.composer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.composer-actions p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.status,
+.empty {
+  margin: 20px 0 0;
+  padding-left: 30px;
+  color: var(--muted);
+}
+
+.error {
+  color: var(--danger);
+}
+
+.note-stream {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0 0 0 30px;
+  list-style: none;
+}
+
+.note-item {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(255, 250, 240, 0.76);
+  box-shadow: 0 10px 30px rgba(54, 44, 27, 0.08);
+}
+
+.note-item textarea {
+  min-height: 110px;
+  padding: 10px 12px;
+  border-color: transparent;
+  background: transparent;
+}
+
+.note-item footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 1.4rem;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+@media (max-width: 680px) {
+  .app-shell {
+    padding: 26px 14px 40px;
+  }
+
+  .stream-panel::before {
+    left: 14px;
+  }
+
+  .stream-header {
+    align-items: flex-start;
+    flex-direction: column;
+    padding-left: 20px;
+  }
+
+  .counter {
+    text-align: left;
+  }
+
+  .composer,
+  .note-stream,
+  .status,
+  .empty {
+    padding-left: 20px;
+  }
+
+  .composer-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .composer-actions button {
+    width: 100%;
+  }
+}
