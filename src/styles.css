@@ -121,7 +121,8 @@ h1 {
   white-space: nowrap;
 }
 
-.composer {
+.composer,
+.current-note {
   margin-bottom: 22px;
   padding: 20px 0 20px 30px;
   border-top: 1px solid var(--line);
@@ -159,6 +160,12 @@ textarea:focus {
   font-size: 1.08rem;
 }
 
+.current-note textarea {
+  min-height: 280px;
+  padding: 18px;
+  font-size: 1.08rem;
+}
+
 .composer-actions {
   display: flex;
   align-items: center;
@@ -184,11 +191,35 @@ textarea:focus {
   color: var(--danger);
 }
 
+.current-note footer {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 14px;
+  min-height: 2.75rem;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.archive-section {
+  padding-left: 30px;
+}
+
+.archive-toggle {
+  margin-bottom: 14px;
+  background: var(--ink);
+}
+
+.archive-toggle:hover:not(:disabled) {
+  background: #3b372f;
+}
+
 .note-stream {
   display: grid;
   gap: 14px;
   margin: 0;
-  padding: 0 0 0 30px;
+  padding: 0;
   list-style: none;
 }
 
@@ -217,6 +248,14 @@ textarea:focus {
   font-size: 0.82rem;
 }
 
+.archived-note p {
+  min-height: 88px;
+  margin: 0;
+  padding: 10px 12px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
 @media (max-width: 680px) {
   .app-shell {
     padding: 26px 14px 40px;
@@ -237,10 +276,16 @@ textarea:focus {
   }
 
   .composer,
-  .note-stream,
+  .current-note,
+  .archive-section,
   .status,
   .empty {
     padding-left: 20px;
+  }
+
+  .current-note footer {
+    align-items: stretch;
+    grid-template-columns: 1fr;
   }
 
   .composer-actions {
