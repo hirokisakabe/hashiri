@@ -63,6 +63,7 @@ export async function createNote(body: string): Promise<Note> {
     body,
     createdAt: now,
     updatedAt: now,
+    revision: 1,
     archived: false,
   };
   const transaction = db.transaction(NOTE_STORE, "readwrite");
@@ -73,7 +74,11 @@ export async function createNote(body: string): Promise<Note> {
   return note;
 }
 
-export async function updateNoteBody(id: string, body: string): Promise<Note> {
+export async function updateNoteBody(
+  id: string,
+  body: string,
+  revision: number,
+): Promise<Note> {
   const db = await openDatabase();
   const transaction = db.transaction(NOTE_STORE, "readwrite");
   const store = transaction.objectStore(NOTE_STORE);
@@ -83,10 +88,15 @@ export async function updateNoteBody(id: string, body: string): Promise<Note> {
     throw new Error(`Note ${id} was not found.`);
   }
 
+  if ((existing.revision ?? 0) > revision) {
+    return existing;
+  }
+
   const updated: Note = {
     ...existing,
     body,
     updatedAt: Date.now(),
+    revision,
   };
 
   store.put(updated);

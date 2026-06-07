@@ -3,5 +3,6 @@ export type Note = {
   body: string;
   createdAt: number;
   updatedAt: number;
+  revision: number;
   archived: false;
 };

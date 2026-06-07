@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { createNote, listActiveNotes, updateNoteBody } from "./db";
 import type { Note } from "./types";
 
@@ -8,13 +8,15 @@ const dateFormatter = new Intl.DateTimeFormat("ja-JP", {
 });
 
 type LoadState = "loading" | "ready" | "error";
+type SaveState = "saving" | "saved" | "error";
 
 function App() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [draft, setDraft] = useState("");
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const [errorMessage, setErrorMessage] = useState("");
-  const [savingIds, setSavingIds] = useState<Set<string>>(new Set());
+  const [saveStates, setSaveStates] = useState<Record<string, SaveState>>({});
+  const latestRevisions = useRef<Record<string, number>>({});
   const noteCountLabel = useMemo(() => `${notes.length} memo`, [notes.length]);
 
   useEffect(() => {
@@ -25,6 +27,9 @@ function App() {
         if (!isMounted) {
           return;
         }
+        latestRevisions.current = Object.fromEntries(
+          storedNotes.map((note) => [note.id, note.revision ?? 0]),
+        );
         setNotes(storedNotes);
         setLoadState("ready");
       })
@@ -49,31 +54,58 @@ function App() {
       return;
     }
 
-    const note = await createNote(body);
-    setNotes((currentNotes) => [note, ...currentNotes]);
-    setDraft("");
+    try {
+      setErrorMessage("");
+      const note = await createNote(body);
+      latestRevisions.current[note.id] = note.revision;
+      setNotes((currentNotes) => [note, ...currentNotes]);
+      setSaveStates((currentStates) => ({ ...currentStates, [note.id]: "saved" }));
+      setDraft("");
+    } catch (error: unknown) {
+      setErrorMessage(error instanceof Error ? error.message : String(error));
+    }
   }
 
   async function handleEdit(noteId: string, body: string) {
+    const nextRevision = (latestRevisions.current[noteId] ?? 0) + 1;
+    latestRevisions.current[noteId] = nextRevision;
+
     setNotes((currentNotes) =>
-      currentNotes.map((note) => (note.id === noteId ? { ...note, body } : note)),
+      currentNotes.map((note) =>
+        note.id === noteId ? { ...note, body, revision: nextRevision } : note,
+      ),
     );
-    setSavingIds((currentIds) => new Set(currentIds).add(noteId));
+    setSaveStates((currentStates) => ({ ...currentStates, [noteId]: "saving" }));
 
     try {
-      const updated = await updateNoteBody(noteId, body);
+      const updated = await updateNoteBody(noteId, body, nextRevision);
       setNotes((currentNotes) =>
         currentNotes
-          .map((note) => (note.id === noteId ? updated : note))
+          .map((note) =>
+            note.id === noteId && updated.revision >= note.revision ? updated : note,
+          )
           .sort((first, second) => second.updatedAt - first.updatedAt),
       );
-    } finally {
-      setSavingIds((currentIds) => {
-        const nextIds = new Set(currentIds);
-        nextIds.delete(noteId);
-        return nextIds;
-      });
+      if (latestRevisions.current[noteId] === nextRevision) {
+        setSaveStates((currentStates) => ({ ...currentStates, [noteId]: "saved" }));
+      }
+    } catch {
+      if (latestRevisions.current[noteId] === nextRevision) {
+        setSaveStates((currentStates) => ({ ...currentStates, [noteId]: "error" }));
+      }
     }
+  }
+
+  function getSaveLabel(noteId: string) {
+    const saveState = saveStates[noteId] ?? "saved";
+
+    if (saveState === "saving") {
+      return "保存中";
+    }
+    if (saveState === "error") {
+      return "保存失敗";
+    }
+    return "保存済み";
   }
 
   return (
@@ -110,6 +142,9 @@ function App() {
         {loadState === "error" && (
           <p className="status error">IndexedDB を開けませんでした: {errorMessage}</p>
         )}
+        {loadState === "ready" && errorMessage && (
+          <p className="status error">保存できませんでした: {errorMessage}</p>
+        )}
         {loadState === "ready" && notes.length === 0 && (
           <p className="empty">まだメモはありません。最初の走り書きを追加してください。</p>
         )}
@@ -127,9 +162,7 @@ function App() {
                   <time dateTime={new Date(note.updatedAt).toISOString()}>
                     {dateFormatter.format(note.updatedAt)}
                   </time>
-                  <span aria-live="polite">
-                    {savingIds.has(note.id) ? "保存中" : "保存済み"}
-                  </span>
+                  <span aria-live="polite">{getSaveLabel(note.id)}</span>
                 </footer>
               </li>
             ))}
