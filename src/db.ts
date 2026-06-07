@@ -168,3 +168,39 @@ export async function archiveNote(id: string): Promise<Note> {
 
   return archived;
 }
+
+export async function resumeNote(id: string): Promise<Note> {
+  const db = await openDatabase();
+  const transaction = db.transaction(NOTE_STORE, "readwrite");
+  const store = transaction.objectStore(NOTE_STORE);
+  const notes = await requestToPromise<Note[]>(store.getAll());
+  const selected = notes.find((note) => note.id === id);
+
+  if (!selected) {
+    throw new Error(`Note ${id} was not found.`);
+  }
+
+  const now = Date.now();
+  const resumed: Note = {
+    ...selected,
+    archived: false,
+    updatedAt: now,
+    revision: (selected.revision ?? 0) + 1,
+  };
+
+  notes
+    .filter((note) => !note.archived && note.id !== id)
+    .forEach((note) => {
+      store.put({
+        ...note,
+        archived: true,
+        updatedAt: now,
+        revision: (note.revision ?? 0) + 1,
+      });
+    });
+
+  store.put(resumed);
+  await transactionDone(transaction);
+
+  return resumed;
+}
