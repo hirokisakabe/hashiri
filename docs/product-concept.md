@@ -15,7 +15,7 @@ Hashiri should make the desired workflow the only workflow.
 - The app has one active note stream.
 - New notes are added to the stream without choosing a destination.
 - Archive is the primary way to remove notes from the active view.
-- Search can help recover old notes, but search is not an organizing structure.
+- Search is not part of the first MVP. If added later, it can help recover old notes but must not become an organizing structure.
 - The interface must not expose folders, tags, categories, notebooks, projects, spaces, or comparable organization features.
 
 ## MVP Operations
@@ -54,7 +54,7 @@ The initial mobile scope excludes:
 - device-to-device sync,
 - installable native iOS or Android apps,
 - push notifications,
-- offline conflict resolution.
+- conflict resolution for any future sync feature.
 
 ## Non-Goals
 
