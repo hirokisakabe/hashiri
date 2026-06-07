@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { archiveNote, createNote, listNotes, updateNoteBody } from "./db";
 import type { Note } from "./types";
 
@@ -19,10 +19,6 @@ function App() {
   const [errorMessage, setErrorMessage] = useState("");
   const [saveStates, setSaveStates] = useState<Record<string, SaveState>>({});
   const latestRevisions = useRef<Record<string, number>>({});
-  const noteCountLabel = useMemo(
-    () => `${activeNote ? 1 : 0} active / ${archivedNotes.length} archived`,
-    [activeNote, archivedNotes.length],
-  );
 
   useEffect(() => {
     let isMounted = true;
@@ -133,17 +129,7 @@ function App() {
 
   return (
     <main className="app-shell">
-      <section className="stream-panel" aria-labelledby="app-title">
-        <header className="stream-header">
-          <div>
-            <p className="eyebrow">Hashiri</p>
-            <h1 id="app-title">One running stream</h1>
-          </div>
-          <p className="counter" aria-live="polite">
-            {noteCountLabel}
-          </p>
-        </header>
-
+      <section className="stream-panel" aria-label="Hashiri">
         {activeNote ? (
           <section className="current-note" aria-label="現在のメモ">
             <textarea
@@ -164,16 +150,15 @@ function App() {
           </section>
         ) : (
           <form className="composer" onSubmit={handleCreate}>
-            <label htmlFor="new-note">新しいメモ</label>
             <textarea
               id="new-note"
+              aria-label="新しいメモ"
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
               placeholder="今の考えを書き足す"
               rows={8}
             />
             <div className="composer-actions">
-              <p>保存先の選択はありません。</p>
               <button type="submit" disabled={!draft.trim()}>
                 作成
               </button>
